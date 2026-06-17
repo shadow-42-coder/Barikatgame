@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BARİKAT v0.3</title>
+<title>BARİKAT v1.0</title>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -14,7 +15,7 @@ font-family:Arial,sans-serif;
 }
 
 body{
-background:#1a1d22;
+background:#1f2633;
 color:white;
 padding:15px;
 }
@@ -27,103 +28,81 @@ margin-bottom:20px;
 }
 
 .panel{
-background:#2b313a;
-border-radius:12px;
+background:#2b3445;
+border-radius:15px;
 padding:15px;
 margin-bottom:15px;
 }
 
 .stats{
 display:flex;
-gap:20px;
+gap:15px;
 margin-top:10px;
 }
 
 .stat{
-background:#3b4450;
-padding:8px 12px;
-border-radius:8px;
+background:#3a465c;
+padding:10px 15px;
+border-radius:10px;
+font-weight:bold;
 }
 
 .field{
 display:flex;
-flex-wrap:wrap;
 gap:10px;
+flex-wrap:wrap;
 margin-top:10px;
-min-height:80px;
-}
-
-.zombie{
-background:#4d5a45;
-padding:10px;
-border-radius:10px;
-min-width:100px;
-text-align:center;
-}
-
-.hand{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-top:15px;
+min-height:90px;
 }
 
 .card{
-background:#3c4654;
-border:2px solid #5b6778;
-border-radius:12px;
-width:130px;
+width:120px;
 height:160px;
-padding:10px;
-cursor:pointer;
-transition:.2s;
+background:#46526a;
+border:2px solid #64748b;
+border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
+cursor:pointer;
+padding:10px;
 font-weight:bold;
+transition:.2s;
 }
 
 .card:hover{
 transform:translateY(-5px);
 }
 
-.controls{
+.hand{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
 margin-top:15px;
 }
 
 button{
-padding:10px 15px;
+padding:12px 20px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 cursor:pointer;
 font-weight:bold;
 }
 
-.endTurn{
+.endBtn{
 background:#27ae60;
 color:white;
+margin-top:15px;
 }
 
 .log{
+background:black;
 height:220px;
 overflow:auto;
-background:#111;
 padding:10px;
 border-radius:10px;
 margin-top:10px;
-}
-
-.winner{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.9);
-display:none;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-font-size:40px;
-z-index:999;
 }
 
 @media(max-width:700px){
@@ -131,14 +110,15 @@ z-index:999;
 .card{
 width:100px;
 height:130px;
-font-size:13px;
+font-size:12px;
 }
 
 .logo{
-font-size:30px;
+font-size:28px;
 }
 
 }
+
 </style>
 </head>
 
@@ -147,44 +127,49 @@ font-size:30px;
 <div class="logo">🧱 BARİKAT</div>
 
 <div class="panel">
+
 <h2>🤖 BOT</h2>
 
 <div class="stats">
 <div class="stat">❤️ <span id="botHp">7</span>/7</div>
-<div class="stat">🧱 <span id="botBarricade">0</span>/3</div>
+<div class="stat">🛡️ <span id="botBarricade">0</span>/3</div>
 </div>
 
 <div id="botField" class="field"></div>
+
 </div>
 
 <div class="panel">
+
 <h2>🎮 SEN</h2>
 
 <div class="stats">
 <div class="stat">❤️ <span id="playerHp">7</span>/7</div>
-<div class="stat">🧱 <span id="playerBarricade">0</span>/3</div>
+<div class="stat">🛡️ <span id="playerBarricade">0</span>/3</div>
 </div>
 
 <div id="playerField" class="field"></div>
+
 </div>
 
 <div class="panel">
+
 <h2>🃏 ELİNDEKİ KARTLAR</h2>
 
 <div id="hand" class="hand"></div>
 
-<div class="controls">
-<button class="endTurn" onclick="endTurn()">TURU BİTİR</button>
-</div>
+<button class="endBtn">
+TURU BİTİR
+</button>
+
 </div>
 
 <div class="panel">
-<h2>📜 OYUN GÜNLÜĞÜ</h2>
-<div id="log" class="log"></div>
-</div>
 
-<div id="winner" class="winner">
-<div id="winnerText"></div>
+<h2>📜 OYUN GÜNLÜĞÜ</h2>
+
+<div id="log" class="log"></div>
+
 </div>
 
 <script>
@@ -201,74 +186,17 @@ barricade:0,
 hand:[]
 };
 
-const cards=[
-"🧟 Zombi",
-"👹 Dev Zombi",
-"🔫 Tabanca",
-"💥 Silah",
-"🛡️ Barikat",
-"❤️ Tamir",
-"⚡ Elektrikli Tel",
-"🏴 Yağma",
-"🛑 Blok",
-"✈️ Hava Saldırısı",
-"💉 Enjeksiyon"
-];
-
 function log(text){
+
 const area=document.getElementById("log");
-area.innerHTML += text + "<br>";
-area.scrollTop = area.scrollHeight;
-}
 
-function drawCard(){
-return cards[Math.floor(Math.random()*cards.length)];
-}
+area.innerHTML+=text+"<br>";
 
-function startGame(){
-
-for(let i=0;i<5;i++){
-player.hand.push(drawCard());
-}
-
-renderHand();
-
-log("Oyun başladı.");
-}
-
-function renderHand(){
-
-const hand=document.getElementById("hand");
-
-hand.innerHTML="";
-
-player.hand.forEach((card,index)=>{
-
-const div=document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=card;
-
-div.onclick=()=>{
-
-log(card+" seçildi.");
-
-};
-
-hand.appendChild(div);
-
-});
+area.scrollTop=area.scrollHeight;
 
 }
 
-function endTurn(){
-
-log("Tur bitti.");
-
-}
-
-startGame();
+log("BARİKAT v1.0 başlatıldı.");
 
 </script>
 
