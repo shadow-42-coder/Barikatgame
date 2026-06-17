@@ -261,6 +261,45 @@ document.getElementById("botBarricade").textContent=bot.barricade;
 log("BARİKAT başlatıldı.");
 
 </script>
+function renderHand(){
 
+const hand=document.getElementById("hand");
+
+hand.innerHTML="";
+
+player.hand.forEach((card,index)=>{
+
+const div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=card;
+
+div.onclick=()=>{
+
+log(card+" seçildi.");
+
+};
+
+hand.appendChild(div);
+
+});
+
+}
+
+function drawStartingHand(){
+
+for(let i=0;i<5;i++){
+
+drawCard(player);
+
+}
+
+renderHand();
+
+}
+
+drawStartingHand();
+updateStats();
 </body>
 </html>
