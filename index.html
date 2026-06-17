@@ -186,7 +186,86 @@ barricade:0,
 hand:[]
 };
 
-function log(text){
+function log(text){const cards=[
+
+"🧟 Zombi",
+"🧟 Zombi",
+"🧟 Zombi",
+
+"👹 Dev Zombi",
+"👹 Dev Zombi",
+
+"🔫 Tabanca",
+"🔫 Tabanca",
+"🔫 Tabanca",
+
+"💥 Silah",
+"💥 Silah",
+"💥 Silah",
+
+"🛡️ Barikat",
+"🛡️ Barikat",
+"🛡️ Barikat",
+
+"❤️ Tamir",
+"❤️ Tamir",
+
+"⚡ Elektrikli Tel",
+"⚡ Elektrikli Tel",
+
+"🏴 Yağma",
+
+"🛑 Blok",
+
+"✈️ Hava Saldırısı",
+
+"💉 Enjeksiyon"
+
+];
+
+function randomCard(){
+
+return cards[
+Math.floor(
+Math.random()*cards.length
+)
+];
+
+}
+
+function renderHand(){
+
+const hand=document.getElementById("hand");
+
+hand.innerHTML="";
+
+player.hand.forEach((card,index)=>{
+
+const div=document.createElement("div");
+
+div.className="card";
+
+div.innerHTML=card;
+
+hand.appendChild(div);
+
+});
+
+}
+
+function drawStartingHand(){
+
+for(let i=0;i<5;i++){
+
+player.hand.push(
+randomCard()
+);
+
+}
+
+renderHand();
+
+}
 
 const area=document.getElementById("log");
 
