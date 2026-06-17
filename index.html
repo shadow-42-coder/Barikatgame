@@ -186,7 +186,7 @@ barricade:0,
 hand:[]
 };
 
-function log(text){const cards=[
+const cards=[
 
 "🧟 Zombi",
 "🧟 Zombi",
@@ -233,6 +233,16 @@ Math.random()*cards.length
 
 }
 
+function log(text){
+
+const area=document.getElementById("log");
+
+area.innerHTML+=text+"<br>";
+
+area.scrollTop=area.scrollHeight;
+
+}
+
 function renderHand(){
 
 const hand=document.getElementById("hand");
@@ -260,6 +270,10 @@ for(let i=0;i<5;i++){
 player.hand.push(
 randomCard()
 );
+
+}
+
+renderHand();
 
 }
 
