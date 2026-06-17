@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BARİKAT v1.0</title>
+
+<title>BARİKAT</title>
 
 <style>
 
@@ -55,26 +56,6 @@ margin-top:10px;
 min-height:90px;
 }
 
-.card{
-width:120px;
-height:160px;
-background:#46526a;
-border:2px solid #64748b;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-cursor:pointer;
-padding:10px;
-font-weight:bold;
-transition:.2s;
-}
-
-.card:hover{
-transform:translateY(-5px);
-}
-
 .hand{
 display:flex;
 gap:10px;
@@ -82,17 +63,35 @@ flex-wrap:wrap;
 margin-top:15px;
 }
 
-button{
-padding:12px 20px;
-border:none;
-border-radius:10px;
+.card{
+width:120px;
+height:160px;
+background:#46526a;
+border:2px solid #64748b;
+border-radius:12px;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:10px;
 cursor:pointer;
 font-weight:bold;
+transition:.2s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+border-color:#f1c40f;
 }
 
 .endBtn{
 background:#27ae60;
+border:none;
 color:white;
+padding:12px 20px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
 margin-top:15px;
 }
 
@@ -158,7 +157,7 @@ font-size:28px;
 
 <div id="hand" class="hand"></div>
 
-<button class="endBtn">
+<button id="endTurnBtn" class="endBtn">
 TURU BİTİR
 </button>
 
@@ -177,16 +176,18 @@ TURU BİTİR
 const player={
 hp:7,
 barricade:0,
-hand:[]
+hand:[],
+zombies:[]
 };
 
 const bot={
 hp:7,
 barricade:0,
-hand:[]
+hand:[],
+zombies:[]
 };
 
-const cards=[
+const deck=[
 
 "🧟 Zombi",
 "🧟 Zombi",
@@ -224,13 +225,9 @@ const cards=[
 ];
 
 function randomCard(){
-
-return cards[
-Math.floor(
-Math.random()*cards.length
-)
+return deck[
+Math.floor(Math.random()*deck.length)
 ];
-
 }
 
 function log(text){
@@ -243,46 +240,27 @@ area.scrollTop=area.scrollHeight;
 
 }
 
-function renderHand(){
+function drawCard(target){
 
-const hand=document.getElementById("hand");
-
-hand.innerHTML="";
-
-player.hand.forEach((card,index)=>{
-
-const div=document.createElement("div");
-
-div.className="card";
-
-div.innerHTML=card;
-
-hand.appendChild(div);
-
-});
-
-}
-
-function drawStartingHand(){
-
-for(let i=0;i<5;i++){
-
-player.hand.push(
+target.hand.push(
 randomCard()
 );
 
 }
 
-renderHand();
+function updateStats(){
+
+document.getElementById("playerHp").textContent=player.hp;
+document.getElementById("playerBarricade").textContent=player.barricade;
+
+document.getElementById("botHp").textContent=bot.hp;
+document.getElementById("botBarricade").textContent=bot.barricade;
 
 }
 
-log("BARİKAT v1.0 başlatıldı.");
-
-drawStartingHand();
+log("BARİKAT başlatıldı.");
 
 </script>
 
 </body>
 </html>
-
