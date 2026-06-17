@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BARİKAT v0.1</title>
+<style>
+body{
+    font-family:Arial;
+    background:#1a1a1a;
+    color:white;
+    text-align:center;
+}
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+.player-area{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
+.panel{
+    width:48%;
+    background:#2a2a2a;
+    border-radius:10px;
+    padding:10px;
+}
+.card{
+    display:inline-block;
+    background:#444;
+    padding:10px;
+    margin:5px;
+    border-radius:8px;
+    cursor:pointer;
+}
+.card:hover{
+    background:#666;
+}
+.log{
+    background:black;
+    height:250px;
+    overflow-y:auto;
+    text-align:left;
+    padding:10px;
+    margin-top:15px;
+}
+button{
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🧱 BARİKAT v0.1</h1>
+
+<h2 id="turnText">Senin Turun</h2>
+
+<div class="player-area">
+
+<div class="panel">
+<h2>Sen</h2>
+<p>Barikat: <span id="playerBarricade">15</span></p>
+<p>Zombiler: <span id="playerZombies">0</span></p>
+<p>Dev Zombiler: <span id="playerBigZombies">0</span></p>
+
+<h3>Elindeki Kartlar</h3>
+<div id="hand"></div>
+
+<button onclick="endTurn()">Turu Bitir</button>
+</div>
+
+<div class="panel">
+<h2>Bot</h2>
+<p>Barikat: <span id="botBarricade">15</span></p>
+<p>Zombiler: <span id="botZombies">0</span></p>
+<p>Dev Zombiler: <span id="botBigZombies">0</span></p>
+</div>
+
+</div>
+
+<div class="log" id="log"></div>
+
+</div>
+
+<script>
+
+const cards = [
+    "Zombi",
+    "Zombi",
+    "Zombi",
+    "Dev Zombi",
+    "Barikat +2",
+    "Barikat +3",
+    "Keskin Nişancı",
+    "Bombardıman"
+];
+
+let player={
+    barricade:15,
+    zombies:0,
+    bigZombies:0,
+    hand:[]
+};
+
+let bot={
+    barricade:15,
+    zombies:0,
+    bigZombies:0
+};
+
+function log(msg){
+    let div=document.getElementById("log");
+    div.innerHTML += msg+"<br>";
+    div.scrollTop=div.scrollHeight;
+}
+
+function randomCard(){
+    return cards[Math.floor(Math.random()*cards.length)];
+}
+
+function drawCard(){
+    player.hand.push(randomCard());
+    render();
+}
+
+function render(){
+
+    document.getElementById("playerBarricade").innerText=player.barricade;
+    document.getElementById("playerZombies").innerText=player.zombies;
+    document.getElementById("playerBigZombies").innerText=player.bigZombies;
+
+    document.getElementById("botBarricade").innerText=bot.barricade;
+    document.getElementById("botZombies").innerText=bot.zombies;
+    document.getElementById("botBigZombies").innerText=bot.bigZombies;
+
+    let hand=document.getElementById("hand");
+    hand.innerHTML="";
+
+    player.hand.forEach((card,index)=>{
+
+        let div=document.createElement("div");
+        div.className="card";
+        div.innerText=card;
+
+        div.onclick=()=>{
+            playCard(index);
+        };
+
+        hand.appendChild(div);
+
+    });
+}
+
+function playCard(index){
+
+    let card=player.hand[index];
+
+    if(card==="Zombi"){
+        player.zombies++;
+        log("🧟 Bir Zombi gönderdin.");
+    }
+
+    if(card==="Dev Zombi"){
+        player.bigZombies++;
+        log("👹 Dev Zombi gönderdin.");
+    }
+
+    if(card==="Barikat +2"){
+        player.barricade+=2;
+        log("🧱 Barikatın +2 arttı.");
+    }
+
+    if(card==="Barikat +3"){
+        player.barricade+=3;
+        log("🧱 Barikatın +3 arttı.");
+    }
+
+    if(card==="Keskin Nişancı"){
+
+        if(bot.bigZombies>0){
+            bot.bigZombies--;
+            log("🎯 Botun Dev Zombisi vuruldu.");
+        }
+        else if(bot.zombies>0){
+            bot.zombies--;
+            log("🎯 Botun Zombisi vuruldu.");
+        }
+        else{
+            log("🎯 Hedef bulunamadı.");
+        }
+    }
+
+    if(card==="Bombardıman"){
+
+        bot.zombies=0;
+        bot.bigZombies=0;
+
+        log("💣 Tüm düşman zombileri yok edildi.");
+    }
+
+    player.hand.splice(index,1);
+
+    render();
+}
+
+function zombieAttack(){
+
+    let damageToBot=
+        player.zombies +
+        (player.bigZombies*2);
+
+    let damageToPlayer=
+        bot.zombies +
+        (bot.bigZombies*2);
+
+    bot.barricade-=damageToBot;
+    player.barricade-=damageToPlayer;
+
+    if(damageToBot>0)
+        log("⚔️ Zombilerin "+damageToBot+" hasar verdi.");
+
+    if(damageToPlayer>0)
+        log("⚔️ Bot zombileri "+damageToPlayer+" hasar verdi.");
+
+}
+
+function botTurn(){
+
+    let card=randomCard();
+
+    log("<hr>🤖 Bot kart çekti: "+card);
+
+    switch(card){
+
+        case "Zombi":
+            bot.zombies++;
+        break;
+
+        case "Dev Zombi":
+            bot.bigZombies++;
+        break;
+
+        case "Barikat +2":
+            bot.barricade+=2;
+        break;
+
+        case "Barikat +3":
+            bot.barricade+=3;
+        break;
+
+        case "Keskin Nişancı":
+
+            if(player.bigZombies>0)
+                player.bigZombies--;
+            else if(player.zombies>0)
+                player.zombies--;
+
+        break;
+
+        case "Bombardıman":
+            player.zombies=0;
+            player.bigZombies=0;
+        break;
+    }
+
+    zombieAttack();
+
+    render();
+
+    checkWinner();
+
+    document.getElementById("turnText").innerText="Senin Turun";
+
+    drawCard();
+}
+
+function endTurn(){
+
+    document.getElementById("turnText").innerText="Bot Düşünüyor...";
+
+    zombieAttack();
+
+    render();
+
+    checkWinner();
+
+    setTimeout(botTurn,1000);
+}
+
+function checkWinner(){
+
+    if(player.barricade<=0 && bot.barricade<=0){
+        alert("Berabere!");
+        location.reload();
+    }
+
+    if(player.barricade<=0){
+        alert("Kaybettin!");
+        location.reload();
+    }
+
+    if(bot.barricade<=0){
+        alert("Kazandın!");
+        location.reload();
+    }
+
+}
+
+drawCard();
+drawCard();
+drawCard();
+render();
+
+log("Oyun başladı.");
+log("İlk hedef rakibin barikatını yıkmak.");
+
+</script>
+
+</body>
+</html>
